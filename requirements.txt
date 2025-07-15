@@ -1,5 +1,2 @@
 fastapi
-request
 uvicorn
-python-dotenv
-openai-whisper
