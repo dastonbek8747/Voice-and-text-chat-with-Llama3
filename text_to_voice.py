@@ -1,7 +1,29 @@
 import os
 
-# Oʻzbekcha matnni MP3 ga aylantirish
-os.system(f'edge-tts --voice uz-UZ-MadinaNeural --text "{"salom. men aqlli uy loyihasi uchun Sultonov Doston tomonidan yaratildim. Men seni uyingni boshqarishda senga yordam beraman."}" --write-media voices/output.mp3')
+# Bir martalik status flag (global o'zgaruvchi)
+processing_shown = False
 
-# Faylni ochish (Ubuntu)
-os.system("xdg-open voices/output.mp3")
+
+def speek_text(data):
+    global processing_shown
+
+    if not data.strip():
+        # Faqat bir marta aytiladi
+        if not processing_shown:
+            print("🟡 Maʼlumotlar qayta ishlanmoqda...")
+            os.system(
+                'edge-tts --voice uz-UZ-MadinaNeural --text "Maʼlumotlar qayta ishlanmoqda..." --write-media voices/output.mp3'
+            )
+            os.system("xdg-open voices/output.mp3")
+            processing_shown = True
+        return ""
+
+    # Agar text bo‘sh bo‘lmasa:
+    print("✅ Matn ovozga aylantirilmoqda:", data)
+    os.system(
+        f'edge-tts --voice uz-UZ-MadinaNeural --text "{data}" --write-media voices/output.mp3'
+    )
+    os.system("xdg-open voices/output.mp3")
+
+    processing_shown = False  # qayta reset qilinadi
+    return ""

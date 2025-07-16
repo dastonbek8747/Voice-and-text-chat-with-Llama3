@@ -1,24 +1,25 @@
-import speech_recognition
+import speech_recognition as sr
 
-rec = speech_recognition.Recognizer()
-mikrofon = speech_recognition.Microphone()
-print("Mikrofon tayyor boldi ....."
-      "gapir.....")
-sikl = True
 
-with mikrofon as mic:
-    rec.adjust_for_ambient_noise(mic)
-    while sikl:
-        print("⏳ Eshitilmoqda...")
-        audio = rec.listen(mic)
+def listen_and_get_text(lang="uz-UZ"):
+    recognizer = sr.Recognizer()
+    mic = sr.Microphone()
+    print("🎙 Mikrofon tayyor. Gapir...")
 
-        try:
-            text = rec.recognize_google(audio, language="uz-UZ")
-            print("matin:", text)
-            if text.lower() == "to'xta":
-                sikl = False
+    with mic as source:
+        recognizer.adjust_for_ambient_noise(source)
 
-        except speech_recognition.UnknownValueError:
-            print("😕 Tushunib bo‘lmadi...")
-        except speech_recognition.RequestError as e:
-            print(f"❌ API muammosi: {e}")
+        while True:
+            print("⏳ Gap eshitilmoqda...")
+            audio = recognizer.listen(source)
+
+            try:
+                text = recognizer.recognize_google(audio, language=lang)
+                print("📥 Matn:", text)
+                # Matn tushunarli bo‘lsa uni qaytaramiz
+                return text.strip()
+
+            except sr.UnknownValueError:
+                print("😕 Tushunib bo‘lmadi...")
+            except sr.RequestError as e:
+                print(f"❌ Google API xatosi: {e}")
