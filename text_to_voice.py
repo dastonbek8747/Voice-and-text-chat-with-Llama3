@@ -11,7 +11,6 @@ def speek_text(data: str):
     global processing_shown
     if not data.strip():
         if not processing_shown:
-            audio_number += 1
             print("Maʼlumotlar qayta ishlanmoqda...")
             os.system(
                 f'edge-tts --voice uz-UZ-MadinaNeural --text "Maʼlumotlar qayta ishlanmoqda..." --write-media {AUDIO_FILE_PATH}'
@@ -24,7 +23,7 @@ def speek_text(data: str):
         f'edge-tts --voice uz-UZ-MadinaNeural --text "{data}" --write-media {AUDIO_FILE_PATH}'
     )
     play_audio()
-
+    audio_number += 1
     processing_shown = False
 
 
