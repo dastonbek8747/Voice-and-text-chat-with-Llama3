@@ -1,29 +1,35 @@
 import os
+import time
 
-# Bir martalik status flag (global o'zgaruvchi)
 processing_shown = False
+audio_number = 0
+AUDIO_FILE_PATH = f"voices/{audio_number}_output.mp3"
 
 
-def speek_text(data):
+def speek_text(data: str):
+    global audio_number
     global processing_shown
-
     if not data.strip():
-        # Faqat bir marta aytiladi
         if not processing_shown:
-            print("🟡 Maʼlumotlar qayta ishlanmoqda...")
+            audio_number += 1
+            print("Maʼlumotlar qayta ishlanmoqda...")
             os.system(
-                'edge-tts --voice uz-UZ-MadinaNeural --text "Maʼlumotlar qayta ishlanmoqda..." --write-media voices/output.mp3'
+                f'edge-tts --voice uz-UZ-MadinaNeural --text "Maʼlumotlar qayta ishlanmoqda..." --write-media {AUDIO_FILE_PATH}'
             )
-            os.system("xdg-open voices/output.mp3")
+            play_audio()
             processing_shown = True
-        return ""
-
-    # Agar text bo‘sh bo‘lmasa:
-    print("✅ Matn ovozga aylantirilmoqda:", data)
+        return
+    print("AI javobi ovozga aylantirilmoqda...")
     os.system(
-        f'edge-tts --voice uz-UZ-MadinaNeural --text "{data}" --write-media voices/output.mp3'
+        f'edge-tts --voice uz-UZ-MadinaNeural --text "{data}" --write-media {AUDIO_FILE_PATH}'
     )
-    os.system("xdg-open voices/output.mp3")
+    play_audio()
 
-    processing_shown = False  # qayta reset qilinadi
-    return ""
+    processing_shown = False
+
+
+def play_audio():
+    if os.path.exists(AUDIO_FILE_PATH):
+        os.system(f"cvlc --play-and-exit {AUDIO_FILE_PATH} >/dev/null 2>&1")
+    else:
+        print("Ovoz fayli topilmadi.")

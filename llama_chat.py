@@ -1,41 +1,39 @@
 import requests
-import text_to_voice
+from deep_translator import GoogleTranslator
 import voice_to_text
+import text_to_voice
 
-
-# bu funksiya llama3 modelimga sorov yuborayapdi va undan kelgan responsni qaytarib yuboradi!
-# siz bu yerda istalgan ai bilan integratsiya qilishingiz mumkin boladi
 
 def get_date_ai(txt: str):
     response = requests.post(
         "http://localhost:11434/api/generate",
         json={
             "model": "llama3",
-            "prompt": f"{txt}",
+            "prompt": txt,
             "stream": False
         }
     )
-    ai_text_return = response.json()["response"]
-    print("AI javobi :", ai_text_return)
-    return ai_text_return
-
-
-# demak funksiyalarni chaqirib loyihani tayyor qisimin yashayniz
-sikl = True
+    return response.json()["response"]
 
 
 def ai_communication():
-    global sikl
-    ...
-    while sikl:
+    while True:
+        voice_to_text.continue_listening = True
         txt = voice_to_text.listen_and_get_text()
-        if txt.lower() == "to'xta":
-            sikl = False
-        elif txt.lower() == "yaxshi":
-            print("  sen bu sozni aytding :", txt)
+        print("Ovozdan olingan matn:", txt)
+
+        if txt.lower() == "dastur toxtatilsin":
+            break
         else:
-            data = get_date_ai(txt)
-            text_to_voice.speek_text(data)
+            voice_to_text.continue_listening = False
+            english_txt = GoogleTranslator(source='uz', target='en').translate(txt)
+            print("Tarjima (UZ ➜ EN):", english_txt)
+            ai_result = get_date_ai(english_txt)
+            print("AI javobi (EN):", ai_result)
+            uzbek_response = GoogleTranslator(source='en', target='uz').translate(ai_result)
+            print("Tarjima (EN ➜ UZ):", uzbek_response)
+            text_to_voice.speek_text(uzbek_response)
+            voice_to_text.continue_listening = True
 
 
 ai_communication()
