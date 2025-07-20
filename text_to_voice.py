@@ -1,6 +1,5 @@
 import os
 import time
-
 processing_shown = False
 audio_number = 0
 AUDIO_FILE_PATH = f"voices/{audio_number}_output.mp3"
